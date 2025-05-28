@@ -1,0 +1,117 @@
+﻿@page "/battleship"
+@using Model
+
+<h3>Battleship</h3>
+
+@if (gameOver)
+{
+    <h4>@statusMessage</h4>
+    <button @onclick="RestartGame">Restart</button>
+}
+else
+{
+    <div style="display: flex; gap: 40px;">
+        <div>
+            <h4>Your Board</h4>
+            <BoardGrid Grid="playerGrid" ShotsGrid="enemyShots" IsPlayer="true" />
+        </div>
+        <div>
+            <h4>Enemy Board</h4>
+            <BoardGrid Grid="enemyGrid" ShotsGrid="playerShots" IsPlayer="false"
+                       OnCellClick="PlayerFire" IsPlayerTurn="isPlayerTurn" />
+        </div>
+    </div>
+    <h5>@statusMessage</h5>
+}
+
+@code {
+    Grid playerGrid;
+    Grid enemyGrid;
+    ShotsGrid playerShots;
+    ShotsGrid enemyShots;
+    bool isPlayerTurn = true;
+    bool gameOver = false;
+    string statusMessage = "Your turn!";
+
+    protected override void OnInitialized()
+    {
+        StartGame();
+    }
+
+    void StartGame()
+    {
+        playerGrid = new Grid();
+        enemyGrid = new Grid();
+        playerShots = new ShotsGrid();
+        enemyShots = new ShotsGrid();
+
+        playerGrid.PlaceFleet(FleetBuilder.CreateFleet());
+        enemyGrid.PlaceFleet(FleetBuilder.CreateFleet());
+
+        isPlayerTurn = true;
+        gameOver = false;
+        statusMessage = "Your turn!";
+    }
+
+    void RestartGame()
+    {
+        StartGame();
+    }
+
+    async Task PlayerFire(int x, int y)
+    {
+        if (!isPlayerTurn || gameOver || playerShots[x, y] != ShotResult.None)
+            return;
+
+        var target = new Point(x, y);
+        bool hit = enemyGrid.FireAt(target);
+        playerShots.Mark(target, hit);
+
+        if (enemyGrid.AllShipsSunk())
+        {
+            statusMessage = "You win!";
+            gameOver = true;
+            StateHasChanged();
+            return;
+        }
+
+        statusMessage = hit ? "Hit! Shoot again!" : "Miss! Enemy's turn.";
+        isPlayerTurn = hit;
+
+        if (!hit)
+        {
+            await Task.Delay(1000); // Pause for effect
+            EnemyTurn();
+        }
+    }
+
+    void EnemyTurn()
+    {
+        var rand = new Random();
+        Point target;
+        do
+        {
+            target = new Point(rand.Next(0, 10), rand.Next(0, 10));
+        } while (enemyShots[target.X, target.Y] != ShotResult.None);
+
+        bool hit = playerGrid.FireAt(target);
+        enemyShots.Mark(target, hit);
+
+        if (playerGrid.AllShipsSunk())
+        {
+            statusMessage = "You lose!";
+            gameOver = true;
+            StateHasChanged();
+            return;
+        }
+
+        statusMessage = hit ? "Enemy hit! Enemy shoots again." : "Your turn!";
+        isPlayerTurn = !hit;
+
+        if (hit)
+        {
+            // Enemy gets another turn after a hit
+            EnemyTurn();
+        }
+    }
+}

@@ -1,0 +1,69 @@
+﻿@using Model
+
+<table class="battleship-board">
+    @for (int y = 0; y < 10; y++)
+    {
+        <tr>
+            @for (int x = 0; x < 10; x++)
+            {
+                <td>
+                    @if (IsPlayer)
+                    {
+                        <div class="@GetCellClass(x, y, true)">
+                            @GetCellContent(x, y, true)
+                        </div>
+                    }
+                    else
+                    {
+                        <button class="@GetCellClass(x, y, false)"
+                                disabled="@(IsPlayerTurn == false || ShotsGrid[x, y] != ShotResult.None)"
+                                @onclick="() => OnCellClick?.Invoke(x, y)">
+                            @GetCellContent(x, y, false)
+                        </button>
+                    }
+                </td>
+            }
+        </tr>
+    }
+</table>
+
+@code {
+    [Parameter] public Grid Grid { get; set; }
+    [Parameter] public ShotsGrid ShotsGrid { get; set; }
+    [Parameter] public EventCallback<int, int> OnCellClick { get; set; }
+    [Parameter] public bool IsPlayer { get; set; } = false;
+    [Parameter] public bool IsPlayerTurn { get; set; } = false;
+
+    string GetCellClass(int x, int y, bool isPlayer)
+    {
+        if (isPlayer)
+        {
+            if (Grid.IsHit(x, y)) return "cell-hit";
+            if (Grid.HasShipAt(x, y)) return "cell-ship";
+            return "cell-empty";
+        }
+        else
+        {
+            if (ShotsGrid[x, y] == ShotResult.Hit) return "cell-hit";
+            if (ShotsGrid[x, y] == ShotResult.Miss) return "cell-miss";
+            return "cell-empty";
+        }
+    }
+
+    string GetCellContent(int x, int y, bool isPlayer)
+    {
+        if (isPlayer)
+        {
+            if (Grid.IsHit(x, y) && Grid.HasShipAt(x, y)) return "💥";
+            if (Grid.HasShipAt(x, y)) return "🚢";
+            if (Grid.IsHit(x, y)) return "✖";
+            return "";
+        }
+        else
+        {
+            if (ShotsGrid[x, y] == ShotResult.Hit) return "💥";
+            if (ShotsGrid[x, y] == ShotResult.Miss) return "✖";
+            return "";
+        }
+    }
+}
