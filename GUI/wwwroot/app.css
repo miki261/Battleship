@@ -1,0 +1,116 @@
+html, body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.page {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+}
+
+.content {
+    padding-top: 1.1rem;
+}
+
+.game-status {
+    background-color: #cde3f9;
+    color: #003e7e;
+    border: 2px solid #1e70c1;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.game-header {
+    background-color: #1e70c1 !important;
+}
+
+.grid-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0 auto;
+    max-width: 90%;
+}
+
+.grid-row {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+}
+
+.grid-cell {
+    width: 35px;
+    height: 35px;
+    border-radius: 6px;
+    border: 1px solid #1e70c1;
+    background-color: #e6f2ff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+    .grid-cell:hover {
+        background-color: #b3d1ff;
+        transform: scale(1.05);
+    }
+
+.intact {
+    background-color: #e6f2ff;
+}
+
+.missed {
+    background-color: #cde3f9;
+    color: #1e70c1;
+    cursor: default;
+}
+
+.hit {
+    background-color: #ff6b6b;
+    color: white;
+    cursor: default;
+}
+
+.btn-success {
+    background-color: #1e70c1;
+    border-color: #003e7e;
+    color: white;
+    font-weight: 600;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+    .btn-success:hover {
+        background-color: #003e7e;
+        border-color: #002855;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+}
+
+footer {
+    background-color: #f8f9fa;
+    margin-top: auto;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}

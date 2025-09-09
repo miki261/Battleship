@@ -1,0 +1,87 @@
+﻿@page "/"
+@inject GUI.Services.GameService GameService
+@rendermode Microsoft.AspNetCore.Components.Web.RenderMode.InteractiveServer
+
+<PageTitle>Battleship</PageTitle>
+
+<div class="container mt-3">
+    <div class="row justify-content-center">
+        <div class="col-12 mb-3">
+            <div class="game-status alert text-center">
+                <h4 class="mb-0">@GameService.StatusText</h4>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row justify-content-center">
+        <div class="col-md-6 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-header text-white text-center game-header">
+                    <h3>Battleship Grid</h3>
+                </div>
+                <div class="card-body">
+                    <div class="grid-container">
+                        @for (int row = 0; row < GameService.GridRows; row++)
+                        {
+                            <div class="grid-row">
+                                @for (int col = 0; col < GameService.GridColumns; col++)
+                                {
+                                    var r = row;
+                                    var c = col;
+                                    var shot = GameService.PlayerShots.FirstOrDefault(s => s.row == r && s.col == c);
+                                    <div class="grid-cell @GetCellClass(shot.state)" 
+                                         @onclick="(() => ShootAt(r, c))">
+                                        @GetCellContent(shot.state)
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-3">
+        <div class="col text-center">
+            <button class="btn btn-success btn-lg" @onclick="RestartGame">
+                New Game
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        GameService.NewGame(10, 10, new[] { 5, 4, 3, 3, 2 });
+    }
+    
+    private void ShootAt(int row, int col)
+    {
+        GameService.PlayerShoot(row, col);
+        StateHasChanged();
+    }
+    
+    private void RestartGame()
+    {
+        GameService.NewGame(10, 10, new[] { 5, 4, 3, 3, 2 });
+        StateHasChanged();
+    }
+    
+    private string GetCellClass(SquareState state) => state switch
+    {
+        SquareState.Hit => "hit",
+        SquareState.Sunken => "hit",
+        SquareState.Missed => "missed",
+        _ => "intact"
+    };
+    
+    private string GetCellContent(SquareState state) => state switch
+    {
+        SquareState.Hit => "✖",
+        SquareState.Sunken => "✖",
+        SquareState.Missed => "•",
+        _ => ""
+    };
+}
