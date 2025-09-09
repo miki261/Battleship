@@ -103,7 +103,7 @@ public class Gunnery
     private readonly ShotsGrid recordGrid;
     private readonly List<int> shipLengths = [];
     private List<Square> shipSquares = new List<Square>();
-    private Square target;
+    private Square target = new Square(0, 0);
     private ITargetSelector targetSelector;
     private readonly SquareEliminator eliminator = new SquareEliminator();
 }
